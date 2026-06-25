@@ -196,13 +196,6 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)      
-                                
-                                try:
-                                    cv_data = json.loads(clean_json)
-                                    html_resume = render_premium_template(cv_data)
-                                    
-                                    st.markdown("### 📄 Premium Layout Preview")
-                                    st.components.v1.html(html_resume, height=600, scrolling=True)
-                                    
-                                    pdf_data = convert_html_to_pdf(html_resume)
+                                cv_data = json.loads(clean_json)
+
                              
