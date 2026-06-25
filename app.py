@@ -128,8 +128,6 @@ GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 st.sidebar.header("🌐 PolyCV AI Control Panel")
 source_lang = st.sidebar.selectbox("Original Language:", ["Arabic", "English", "French", "Spanish", "German"])
 target_lang_1 = st.sidebar.selectbox("Target Language:", ["English", "Arabic", "French", "Spanish", "German"])
-
-# Safe tuple mapping for selections
 num_languages = st.sidebar.radio("Additional target languages:", (1, 2, 3), index=0)
 
 target_languages = [target_lang_1]
@@ -205,6 +203,6 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)
                                 
+                                # تم ضبط بلوك الـ try/except الداخلي بالكامل وتنسيق المسافات والمحاذاة 100%
                                 try:
                                     cv_data = json.loads(clean_json)
-                                    premium_html = render_premium_template(cv_data)
