@@ -120,8 +120,9 @@ if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use
                                 ---
                                 """
                                 
+                                # تم التثبيت هنا على النموذج المعتمد والمتاح رسمياً للجميع حالياً من جروق لمنع الـ 404
                                 completion = client.chat.completions.create(
-                                    model="llama-3.3-70b-8192", # استخدام النسخة الرسمية الأكثر توافقاً واستقراراً
+                                    model="llama-3.1-70b-versatile",
                                     messages=[
                                         {"role": "system", "content": system_instruction},
                                         {"role": "user", "content": user_prompt}
@@ -137,7 +138,6 @@ if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use
                                 st.text_area(f"انسخ نص الترجمة ({t_lang}) من هنا:", value=translated_output, height=200, key=f"text_{file_index}_{lang_index}")
                                 
         except Exception as e:
-            # إصلاح معالجة الخطأ هنا عبر تحويل الكائن بأكمله إلى نص صريح لمنع التعليق البرمجي
             st.error(f"❌ حدث خطأ في خادم الـ API أو المفتاح المستخدم: {str(e)}")
 
 st.sidebar.markdown("---")
