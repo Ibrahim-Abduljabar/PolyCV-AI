@@ -4,7 +4,7 @@ from pypdf import PdfReader
 import io
 import os
 
-# 1. التهيئة وإعدادات الصفحة الرائعة لواجهة المستخدم PolyCV AI
+# 1. التهيئة وإعدادات الواجهة الاحترافية للمستخدمين
 st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
 
 st.markdown("""
@@ -19,16 +19,11 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم
-GROQ_API_KEY = st.secrets.get("API_KEY") or os.environ.get("API_KEY")
+# 2. جلب مفتاح الـ API الخاص بك تلقائياً بالخلفية دون إزعاج المستخدم
+# سيقوم الكود بالبحث عن المفتاح في الـ Secrets الخاصة بـ Streamlit أو البيئة المحيطة
+FINAL_API_KEY = st.secrets.get("API_KEY") or os.environ.get("API_KEY")
 
-st.sidebar.header("⚙️ PolyCV AI Control Panel")
-
-if not GROQ_API_KEY:
-    api_key_input = st.sidebar.text_input("🔑 أدخل مفتاح الـ API الخاص بـ Groq للبدء:", type="password")
-    final_api_key = api_key_input
-else:
-    final_api_key = GROQ_API_KEY
+st.sidebar.header("⚙️ لوحة التحكم")
 
 source_lang = st.sidebar.selectbox(
     "🌐 اللغة الحالية للسيرة الذاتية (Original Language):",
@@ -54,7 +49,7 @@ if num_languages == 3:
 
 target_languages = list(set(target_languages))
 
-# 3. رفع ملفات متعددة (PDF)
+# 3. رفع ملفات الـ PDF
 st.subheader("📁 ارفع ملف سيرة ذاتية أو أكثر (PDF)")
 uploaded_files = st.file_uploader("اختر ملفات السير الذاتية الخاصة بك بصيغة PDF وسيقوم نظام PolyCV AI بمعالجتها فوراً وضمان ربطها بذكاء وعبر واجهة برمجية واحدة", type=["pdf"], accept_multiple_files=True)
 
@@ -73,15 +68,16 @@ if uploaded_files:
         except Exception as e:
             st.error(f"❌ حدث خطأ أثناء قراءة ملف {uploaded_file.name}: {e}")
 
-# 4. زر التفعيل والمعالجة عبر Groq
+# 4. زر التشغيل والمعالجة
 if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_container_width=True):
-    if not final_api_key:
-        st.error("❌ لم يتم العثور على مفتاح API. يرجى إدخال مفتاح Groq الخاص بك في الشريط الجانبي.")
+    if not FINAL_API_KEY:
+        # رسالة تظهر لك فقط في حالة نسيت إدخال المفتاح في لوحة تحكم الاستضافة
+        st.error("❌ خطأ في النظام: مفتاح الـ API الخاص بصاحب الموقع غير مضبوط في الإعدادات السرية (Secrets).")
     elif not cv_dict:
         st.warning("⚠️ الرجاء رفع ملف PDF يحتوي على نصوص واضحة أولاً.")
     else:
         try:
-            client = Groq(api_key=final_api_key)
+            client = Groq(api_key=FINAL_API_KEY)
             
             system_instruction = """
             UNBREAKABLE INSTRUCTIONS TO PREVENT HALLUCINATION:
@@ -116,7 +112,6 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                 ---
                                 """
                                 
-                                # تم التحديث هنا إلى النموذج الجديد المدعوم llama-3.3-70b-versatile
                                 completion = client.chat.completions.create(
                                     model="llama-3.3-70b-versatile",
                                     messages=[
@@ -127,14 +122,13 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices[0].message.content
+                                translated_output = completion.choices.message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 st.text_area(f"📋 نص السيرة الذاتية المترجمة ({t_lang}) (يمكنك نسخه مباشرة):", value=translated_output, height=200, key=f"text_{file_index}_{lang_index}")
         except Exception as e:
-            st.sidebar.markdown("---")
-            st.sidebar.error(f"❌ حدث خطأ في معالجة الـ API: {e}")
+            st.error(f"❌ عذراً، حدث خطأ أثناء المعالجة، يرجى المحاولة لاحقاً. ({e})")
 
 st.sidebar.markdown("---")
 st.sidebar.write("⚡ Powered by PolyCV AI Engine & Groq Cloud")
