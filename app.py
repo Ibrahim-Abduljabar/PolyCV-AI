@@ -193,7 +193,7 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                     temperature=0.1
                                 )
                                 
-                                raw_json = completion.choices.message.content
+                                raw_json = completion.choices[0].message.content
                                 clean_json = clean_json_string(raw_json)      
                                 cv_data = json.loads(clean_json)
 
