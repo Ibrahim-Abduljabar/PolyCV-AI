@@ -19,7 +19,7 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم (تم إرجاع متغيرك الأصلي بالكامل)
+# 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم (متغيرك الأصلي بالكامل)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -34,7 +34,6 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
-# تم إصلاح هذا السطر وإرجاع [1, 2, 3] الصحيحة لمنع أخطاء السيرفر
 num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
 
 target_languages = [target_lang_1]
@@ -111,7 +110,6 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                 ---
                                 """
                                 
-                                # التحديث الآمن للموديل الجديد الشغال بدون المساس بأي كود آخر
                                 completion = client.chat.completions.create(
                                     model="llama-3.3-70b-versatile",
                                     messages=[
@@ -122,9 +120,10 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices.message.content
+                                # تم إصلاح السطر وإضافة [0] لاستخراج الاستجابة بنجاح
+                                translated_output = completion.choices[0].message.content
                                 
-                                st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح وااحترافية عالية!")
+                                st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 st.text_area(f"📋 نص السيرة الذاتية المترجمة ({t_lang}) (يمكنك نسخه مباشرة):", value=translated_output, height=200, key=f"text_{file_index}_{lang_index}")
         except Exception as e:
