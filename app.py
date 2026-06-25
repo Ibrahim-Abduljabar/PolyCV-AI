@@ -17,19 +17,17 @@ st.markdown("""
 
 st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=True)
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">ترجم وحوّر عدة سير ذاتية في نفس الوقت باحترافية مطلقة متوافقة مع أنظمة الفرز العالمية دون أي هلوسة أو مساس ببياناتك الحساسة</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">ترجم وحوّر عدة سير ذاتية في نفس الوقت إلى عدة لغات باحترافية مطلقة متوافقة مع أنظمة الفرز العالمية دون أي هلوسة</div>', unsafe_allow_html=True)
 
-# 2. جلب مفتاح الـ API بأمان في الخلفية وصمت تام (تم إخفاء أي جمل للمستخدم)
+# 2. جلب مفتاح الـ API بأمان في الخلفية وصمت تام
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("⚙️ PolyCV AI Control Panel")
 
-# إذا لم يجد السيرفر المفتاح في الـ Secrets (مثلاً لو جربه شخص اشترى الموقع على سيرفره الخاص)، يظهر له خانة الإدخال
 if not GROQ_API_KEY:
     api_key_input = st.sidebar.text_input("أدخل مفتاح Groq API Key الخاص بك:", type="password")
     final_api_key = api_key_input
 else:
-    # تم حذف جملة النجاح القديمة تماماً ليكون العمل صامتاً واحترافياً للمستخدمين
     final_api_key = GROQ_API_KEY
 
 source_lang = st.sidebar.selectbox(
@@ -37,13 +35,30 @@ source_lang = st.sidebar.selectbox(
     ["Arabic", "English", "French", "Spanish", "German", "Turkish", "Hindi"]
 )
 
-target_lang = st.sidebar.selectbox(
-    "اللغة المستهدفة للترجمة (Target Language):",
-    ["English", "Arabic", "French", "Spanish", "German", "Turkish", "Urdu"],
-    index=0
-)
+# --- تطوير الميزة الجديدة: الترجمة المتعددة لعدة لغات مستهدفة ---
+st.sidebar.markdown("---")
+st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
-# 3. قسم رفع ملفات متعددة (الميزة الاحترافية)
+# اللغة الأولى الافتراضية
+target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأساسية:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
+
+# تفعيل زر لزيادة لغة ثانية وثالثة ديناميكياً
+num_languages = st.sidebar.radio("عدد اللغات المستهدفة للترجمة الحالية:", [1, 2, 3], index=0)
+
+target_languages = [target_lang_1]
+
+if num_languages >= 2:
+    target_lang_2 = st.sidebar.selectbox("اللغة المستهدفة الثانية:", ["French", "Spanish", "German", "Turkish", "English", "Arabic"], index=0)
+    target_languages.append(target_lang_2)
+
+if num_languages == 3:
+    target_lang_3 = st.sidebar.selectbox("اللغة المستهدفة الثالثة:", ["Spanish", "German", "Turkish", "English", "Arabic", "French"], index=0)
+    target_languages.append(target_lang_3)
+
+# حذف التكرار لو اختار المستخدم نفس اللغة بالخطأ
+target_languages = list(set(target_languages))
+
+# 3. قسم رفع ملفات متعددة (PDF)
 st.subheader("📁 ارفع ملف سيرة ذاتية واحد أو أكثر (PDF)")
 uploaded_files = st.file_uploader("يمكنك اختيار عدة ملفات PDF معاً وترجمتها دفعة واحدة عبر PolyCV AI:", type=["pdf"], accept_multiple_files=True)
 
@@ -58,24 +73,21 @@ if uploaded_files:
             if full_text.strip():
                 cv_dict[uploaded_file.name] = full_text
             else:
-                st.warning(f"⚠️ الملف '{uploaded_file.name}' يبدو فارغاً أو عبارة عن صور ولم نتمكن من قراءة نصه.")
+                st.warning(f"⚠️ الملف '{uploaded_file.name}' يبدو فارغاً ولم نتمكن من قراءة نصه.")
         except Exception as e:
             st.error(f"حدث خطأ أثناء قراءة الملف {uploaded_file.name}: {e}")
     
     if cv_dict:
-        st.success(f"✅ PolyCV AI جاهز الآن لمعالجة ({len(cv_dict)}) سيرة ذاتية فوراً!")
+        st.success(f"✅ PolyCV AI جاهز الآن لمعالجة ({len(cv_dict)}) سيرة ذاتية إلى ({len(target_languages)}) لغات!")
 
-# 4. زر التشغيل والمعالجة عبر Groq
+# 4. زر التشغيل والمعالجة عبر Groq بالنموذج الحديث الأسرع
 if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use_container_width=True):
     if not final_api_key:
         st.error("❌ نعتذر، هناك مشكلة في إعدادات خادم الـ API. يرجى تزويد المفتاح في الشريط الجانبي.")
     elif not cv_dict:
         st.warning("⚠️ الرجاء رفع ملفات PDF تحتوي على نصوص واضحة أولاً.")
-    elif source_lang == target_lang:
-        st.warning("⚠️ لغة المدخلات هي نفسها لغة المخرجات المستهدفة. يرجى تغيير اللغة المستهدفة.")
     else:
-        result_tabs = st.tabs(list(cv_dict.keys()))
-        
+        # الاتصال بـ Groq Cloud
         try:
             client = Groq(api_key=final_api_key)
             
@@ -91,39 +103,52 @@ if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use
             5. Double-check all dates and contacts against the input before outputting.
             """
             
-            for index, (file_name, cv_text) in enumerate(cv_dict.items()):
-                with result_tabs[index]:
-                    with st.spinner(f"⚡ PolyCV AI يترجم حالياً: {file_name}..."):
-                        
-                        user_prompt = f"""
-                        Translate this specific CV from {source_lang} to {target_lang}. Maximize ATS optimization.
-                        
-                        CV Input Text:
-                        ---
-                        {cv_text}
-                        ---
-                        """
-                        
-                        completion = client.chat.completions.create(
-                            model="llama3-70b-8192",
-                            messages=[
-                                {"role": "system", "content": system_instruction},
-                                {"role": "user", "content": user_prompt}
-                            ],
-                            temperature=0.0,
-                            max_tokens=4000
-                        )
-                        
-                        translated_output = completion.choices.message.content
-                        
-                        st.success(f"🎉 تم إنهاء ترجمة: {file_name}")
-                        st.markdown(f"### 📄 السيرة الذاتية المترجمة لملف: {file_name}")
-                        st.markdown(translated_output)
-                        st.text_area(f"انسخ نص {file_name} المترجم من هنا:", value=translated_output, height=250, key=f"text_{index}")
-                        
+            # إنشاء تابس رئيسية لكل ملف مرفوع
+            file_tabs = st.tabs(list(cv_dict.keys()))
+            
+            for file_index, (file_name, cv_text) in enumerate(cv_dict.items()):
+                with file_tabs[file_index]:
+                    st.markdown(f"### 📄 معالجة الملف: **{file_name}**")
+                    
+                    # إنشاء تابس فرعية داخل كل ملف لكل لغة مستهدفة تم اختيارها
+                    lang_tabs = st.tabs([f"لغة: {lang}" for lang in target_languages])
+                    
+                    for lang_index, t_lang in enumerate(target_languages):
+                        with lang_tabs[lang_index]:
+                            if source_lang == t_lang:
+                                st.warning(f"⚠️ اللغة المستهدفة ({t_lang}) هي نفس اللغة الأصلية. تم التخطيط الفوري لحماية البيانات.")
+                                continue
+                                
+                            with st.spinner(f"⚡ PolyCV AI يترجم حالياً إلى {t_lang}..."):
+                                user_prompt = f"""
+                                Translate this specific CV from {source_lang} to {t_lang}. Maximize ATS optimization.
+                                
+                                CV Input Text:
+                                ---
+                                {cv_text}
+                                ---
+                                """
+                                
+                                # تم التحديث هنا إلى نموذج Llama-3.3-70b-versatile السريع والنشط والمدعوم حالياً بالكامل
+                                completion = client.chat.completions.create(
+                                    model="llama-3.3-70b-versatile",
+                                    messages=[
+                                        {"role": "system", "content": system_instruction},
+                                        {"role": "user", "content": user_prompt}
+                                    ],
+                                    temperature=0.0,
+                                    max_tokens=4000
+                                )
+                                
+                                translated_output = completion.choices.message.content
+                                
+                                st.success(f"🎉 تم إنهاء الترجمة والتحوير إلى {t_lang} بنجاح!")
+                                st.markdown(translated_output)
+                                st.text_area(f"انسخ نص الترجمة ({t_lang}) من هنا:", value=translated_output, height=200, key=f"text_{file_index}_{lang_index}")
+                                
         except Exception as e:
-            st.error(f"❌ حدث خطأ غير متوقع أثناء معالجة البيانات: {e}")
+            st.error(f"❌ حدث خطأ غير متوقع أثناء معالجة البيانات عبر خوادم جروق الحديثة: {e}")
 
 st.sidebar.markdown("---")
-st.sidebar.write("⚡ Powered by PolyCV AI Engine")
+st.sidebar.write("⚡ Powered by PolyCV AI Engine & Groq Cloud")
 st.sidebar.write("Developed by Pre-revenue Startup Studio")
