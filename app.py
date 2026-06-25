@@ -205,4 +205,4 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                     st.components.v1.html(html_resume, height=600, scrolling=True)
                                     
                                     pdf_data = convert_html_to_pdf(html_resume)
-                                    if pdf_data:
+                             
