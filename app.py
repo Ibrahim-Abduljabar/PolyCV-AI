@@ -204,5 +204,8 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 clean_json = clean_json_string(raw_json)
                                 
                                 # تم ضبط بلوك الـ try/except الداخلي بالكامل وتنسيق المسافات والمحاذاة 100%
-                                try:
-                                    cv_data = json.loads(clean_json)
+             try:
+              cv_data = json.loads(clean_json)
+              except Exception as e:
+              st.error(f"Error parsing JSON: {e}")
+              cv_data = {}
