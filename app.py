@@ -202,4 +202,8 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)
-                                cv_data = json.loads(clean_json)
+                                
+                                try:
+                                    cv_data = json.loads(clean_json)
+                                    
+                                    # Render the data into premium HTML
