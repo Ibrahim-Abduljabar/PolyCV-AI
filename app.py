@@ -141,8 +141,8 @@ if uploaded_files:
             full_text = "\n".join(extracted_pages)
             if full_text.strip():
                 cv_dict[uploaded_file.name] = full_text
-        except Exception as e:
-            st.error(f"Error reading file: {e}")
+       
+          
 
 if st.button("🚀 Process and Inject Data Into Premium Template", use_container_width=True):
     if not GROQ_API_KEY:
