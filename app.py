@@ -140,7 +140,8 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices.message.content
+                                # تم التعديل النهائي والصحيح هنا لفك القائمة بنجاح
+                                translated_output = completion.choices[0].message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
