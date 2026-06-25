@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 from pypdf import PdfReader
+from fpdf import FPDF
 import io
 import os
 
@@ -19,6 +20,18 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
+# دالة مساعدة لتوليد ملف PDF احترافي قابل للتحميل
+def create_pdf(text):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=12)
+    # تنظيف النص وكتابته داخل الـ PDF سطر بسطر
+    for line in text.split('\n'):
+        # استبدال الرموز غير المدعومة بالخطوط القياسية لضمان عدم حدوث أخطاء ترميز
+        clean_line = line.encode('latin-1', 'replace').decode('latin-1')
+        pdf.multi_cell(0, 10, txt=clean_line)
+    return pdf.output()
+
 # 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم (متغيرك الأصلي بالكامل)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
@@ -34,7 +47,7 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
-num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
+num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:",, index=0)
 
 target_languages = [target_lang_1]
 
@@ -120,12 +133,22 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                # تم إصلاح السطر وإضافة [0] لاستخراج الاستجابة بنجاح
                                 translated_output = completion.choices[0].message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
-                                st.text_area(f"📋 نص السيرة الذاتية المترجمة ({t_lang}) (يمكنك نسخه مباشرة):", value=translated_output, height=200, key=f"text_{file_index}_{lang_index}")
+                                
+                                # توليد ملف الـ PDF الجديد في الذاكرة وتجهيزه للتحميل
+                                pdf_data = create_pdf(translated_output)
+                                
+                                # إضافة زر التحميل السحري للمستخدم النهائي للـ SaaS
+                                st.download_button(
+                                    label=f"📥 تحميل السيرة الذاتية المترجمة ({t_lang}) كملف PDF",
+                                    data=pdf_data,
+                                    file_name=f"Translated_CV_{t_lang}.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_{file_index}_{lang_index}"
+                                )
         except Exception as e:
             st.error(f"❌ حدث خطأ في معالجة الـ API: {e}")
 
