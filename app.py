@@ -20,15 +20,24 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# دالة مساعدة لتوليد ملف PDF احترافي قابل للتحميل
+# دالة ذكية ومعدلة بالكامل لتوليد PDF آمن ومستقر دون التسبب في خطأ المساحة الأفقية
 def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Helvetica", size=12)
-    for line in text.split('\n'):
+    pdf.set_font("Helvetica", size=11)
+    
+    # تنظيف نصوص الـ Markdown لضمان عدم كسر المكتبة
+    clean_text = text.replace("**", "").replace("*", "").replace("###", "").replace("##", "")
+    
+    for line in clean_text.split('\n'):
+        if not line.strip():
+            pdf.ln(4)
+            continue
+        # ترميز آمن لمنع رموز كسر الحروف
         clean_line = line.encode('latin-1', 'replace').decode('latin-1')
-        pdf.multi_cell(0, 10, txt=clean_line)
-    return pdf.output()
+        # استخدام multi_cell مع تحديد عرض ثابت لتجنب مشاكل الهوامش تماماً
+        pdf.multi_cell(190, 7, txt=clean_line)
+    return pdf.output(dest='S').encode('latin-1')
 
 # 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم (متغيرك الأصلي بالكامل)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
@@ -45,7 +54,6 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
-# تم إصلاح الخطأ وإضافة مصفوفة الخيارات [1, 2, 3] هنا بشكل صحيح
 num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
 
 target_languages = [target_lang_1]
@@ -132,12 +140,12 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices[0].message.content
+                                translated_output = completion.choices.message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 
-                                # توليد ملف الـ PDF الجديد في الذاكرة وتجهيزه للتحميل
+                                # توليد الـ PDF بالدالة المحدثة والآمنة
                                 pdf_data = create_pdf(translated_output)
                                 
                                 st.download_button(
