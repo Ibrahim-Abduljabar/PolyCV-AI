@@ -206,7 +206,7 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
         
                                 try:
                                     cv_data = json.loads(clean_json)
-                                    except Exception as e:
+                                except Exception as e:
                                      st.error(f"Error: {e}")
                                      cv_data = {}
                             
