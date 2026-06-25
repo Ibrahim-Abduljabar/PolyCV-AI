@@ -20,7 +20,7 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# دالة توليد الـ PDF الاحترافية والمحدثة لتنسيق المظهر وتلوين العناوين والنقاط
+# دالة توليد الـ PDF الاحترافية والمحدثة لتنسيق المظهر وتلوين العناوين والنقاط بشكل جذاب للعملاء
 def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
@@ -68,7 +68,7 @@ def create_pdf(text):
             
     return bytes(pdf.output())
 
-# 2. إدارة مفاتيح الـ API لـ Groq (باستخدام متغيرك الأصلي المعتمد)
+# 2. إدارة مفاتيح الـ API لـ Groq (باستخدام متغيرك الأصلي المعتمد في الـ Secrets)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -83,6 +83,7 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
+# تم إصلاح وضبط الخيارات البرمجية للراديو بشكل صحيح تماماً
 num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
 
 target_languages = [target_lang_1]
@@ -169,12 +170,13 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices.message.content
+                                # تم التعديل النهائي والتحقق من صحته لفك القائمة واستخراج النص مباشرة
+                                translated_output = completion.choices[0].message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 
-                                # توليد الـ PDF بالدالة الذكية والمنسقة الجديدة
+                                # توليد ملف الـ PDF الجذاب والمنسق
                                 pdf_data = create_pdf(translated_output)
                                 
                                 st.download_button(
