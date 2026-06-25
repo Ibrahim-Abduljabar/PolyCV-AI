@@ -19,9 +19,8 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# 2. جلب مفتاح الـ API الخاص بك تلقائياً بالخلفية دون إزعاج المستخدم
-# سيقوم الكود بالبحث عن المفتاح في الـ Secrets الخاصة بـ Streamlit أو البيئة المحيطة
-FINAL_API_KEY = st.secrets.get("API_KEY") or os.environ.get("API_KEY")
+# 2. جلب مفتاح الـ API الخاص بك تلقائياً بالاعتماد على متغيرك الأصلي API_d
+FINAL_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("⚙️ لوحة التحكم")
 
@@ -71,7 +70,6 @@ if uploaded_files:
 # 4. زر التشغيل والمعالجة
 if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_container_width=True):
     if not FINAL_API_KEY:
-        # رسالة تظهر لك فقط في حالة نسيت إدخال المفتاح في لوحة تحكم الاستضافة
         st.error("❌ خطأ في النظام: مفتاح الـ API الخاص بصاحب الموقع غير مضبوط في الإعدادات السرية (Secrets).")
     elif not cv_dict:
         st.warning("⚠️ الرجاء رفع ملف PDF يحتوي على نصوص واضحة أولاً.")
