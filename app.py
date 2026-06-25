@@ -5,7 +5,7 @@ from fpdf import FPDF
 import io
 import os
 
-# 1. التهيئة وإعدادات الصفحة الرائعة لواجهة المستخدم PolyCV AI
+# 1. التهيئة وإعدادات الصفحة لواجهة المستخدم PolyCV AI
 st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
 
 st.markdown("""
@@ -20,11 +20,10 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# الدالة المحدثة التي تضمن التفاف الأسطر وتمنع النص من الخروج خارج الورقة
+# دالة توليد الـ PDF الاحترافية مع الالتفاف التلقائي للنصوص
 def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
-    # ضبط الهوامش تلقائياً (15 ملم يمين ويسار)
     pdf.set_margins(15, 15, 15)
     pdf.set_font("Helvetica", size=11)
     
@@ -37,12 +36,11 @@ def create_pdf(text):
             continue
         # ترميز آمن لمنع رموز كسر الحروف
         clean_line = line.encode('latin-1', 'replace').decode('latin-1')
-        # تم تحديد العرض بـ 180 لضمان الالتفاف والنزول لسطر جديد تلقائياً
         pdf.multi_cell(180, 6, txt=clean_line)
         
     return bytes(pdf.output())
 
-# 2. إدارة مفاتيح الـ API لـ Groq للتيسير على المستخدم (متغيرك الأصلي بالكامل)
+# 2. إدارة مفاتيح الـ API لـ Groq (باستخدام متغيرك الأصلي API_d)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -57,7 +55,7 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
-num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية Mُراد الترجمة إليها:", [1, 2, 3], index=0)
+num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
 
 target_languages = [target_lang_1]
 
@@ -71,7 +69,7 @@ if num_languages == 3:
 
 target_languages = list(set(target_languages))
 
-# 3. رفع ملفات متعددة (PDF)
+# 3. رفع ملفات السير الذاتية (PDF)
 st.subheader("📁 ارفع ملف سيرة ذاتية أو أكثر (PDF)")
 uploaded_files = st.file_uploader("اختر ملفات السير الذاتية الخاصة بك بصيغة PDF وسيقوم نظام PolyCV AI بمعالجتها فوراً وضمان ربطها بذكاء وعبر واجهة برمجية واحدة", type=["pdf"], accept_multiple_files=True)
 
@@ -90,7 +88,7 @@ if uploaded_files:
         except Exception as e:
             st.error(f"❌ حدث خطأ أثناء قراءة ملف {uploaded_file.name}: {e}")
 
-# 4. زر التفعيل والمعالجة عبر Groq
+# 4. زر التفعيل والمعالجة والترجمة
 if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_container_width=True):
     if not GROQ_API_KEY:
         st.error("❌ لم يتم العثور على مفتاح API الخاص بصاحب الموقع في الإعدادات السرية (Secrets).")
@@ -143,12 +141,13 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                translated_output = completion.choices[message.content
+                                # تم إصلاح وإغلاق القوس البرمجي هنا بشكل صحيح ومضمون
+                                translated_output = completion.choices[0].message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 
-                                # توليد الـ PDF بالدالة المحدثة والمنسقة
+                                # توليد الـ PDF بالدالة المحدثة الآمنة
                                 pdf_data = create_pdf(translated_output)
                                 
                                 st.download_button(
