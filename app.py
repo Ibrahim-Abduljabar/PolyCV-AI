@@ -19,15 +19,17 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">ترجم وحوّر عدة سير ذاتية في نفس الوقت باحترافية مطلقة متوافقة مع أنظمة الفرز العالمية دون أي هلوسة أو مساس ببياناتك الحساسة</div>', unsafe_allow_html=True)
 
-# 2. جلب مفتاح الـ API بأمان متوافق مع Streamlit Cloud
+# 2. جلب مفتاح الـ API بأمان في الخلفية وصمت تام (تم إخفاء أي جمل للمستخدم)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("⚙️ PolyCV AI Control Panel")
+
+# إذا لم يجد السيرفر المفتاح في الـ Secrets (مثلاً لو جربه شخص اشترى الموقع على سيرفره الخاص)، يظهر له خانة الإدخال
 if not GROQ_API_KEY:
-    api_key_input = st.sidebar.text_input("أدخل مفتاح Groq API Key يدوياً:", type="password")
+    api_key_input = st.sidebar.text_input("أدخل مفتاح Groq API Key الخاص بك:", type="password")
     final_api_key = api_key_input
 else:
-    st.sidebar.success("✅ تم جلب مفتاح API_d بأمان من الـ Secrets!")
+    # تم حذف جملة النجاح القديمة تماماً ليكون العمل صامتاً واحترافياً للمستخدمين
     final_api_key = GROQ_API_KEY
 
 source_lang = st.sidebar.selectbox(
@@ -66,7 +68,7 @@ if uploaded_files:
 # 4. زر التشغيل والمعالجة عبر Groq
 if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use_container_width=True):
     if not final_api_key:
-        st.error("❌ الرجاء التأكد من وجود مفتاح Groq API Key في الـ Secrets أو إدخاله في الشريط الجانبي!")
+        st.error("❌ نعتذر، هناك مشكلة في إعدادات خادم الـ API. يرجى تزويد المفتاح في الشريط الجانبي.")
     elif not cv_dict:
         st.warning("⚠️ الرجاء رفع ملفات PDF تحتوي على نصوص واضحة أولاً.")
     elif source_lang == target_lang:
@@ -120,8 +122,8 @@ if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use
                         st.text_area(f"انسخ نص {file_name} المترجم من هنا:", value=translated_output, height=250, key=f"text_{index}")
                         
         except Exception as e:
-            st.error(f"❌ حدث خطأ أثناء الاتصال بخوادم Groq: {e}")
+            st.error(f"❌ حدث خطأ غير متوقع أثناء معالجة البيانات: {e}")
 
 st.sidebar.markdown("---")
-st.sidebar.write("⚡ Powered by PolyCV AI Engine & Groq Cloud")
-st.sidebar.write("Developed by Ibrahim - Pre-revenue Startup Studio")
+st.sidebar.write("⚡ Powered by PolyCV AI Engine")
+st.sidebar.write("Developed by Pre-revenue Startup Studio")
