@@ -1,381 +1,127 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "authorship_tag": "ABX9TyMyu0r/+nqDUpqiGoG2bthz",
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
-    }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/Ibrahim-Abduljabar/PolyCV-AI/blob/main/PolyCV_AI\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "execution_count": 1,
-      "metadata": {
-        "id": "X9aZwdNb8irE",
-        "colab": {
-          "base_uri": "https://localhost:8080/"
-        },
-        "outputId": "2a624847-2dba-47e9-aca5-f548ca309f38"
-      },
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stdout",
-          "text": [
-            "Collecting groq\n",
-            "  Downloading groq-1.5.0-py3-none-any.whl.metadata (16 kB)\n",
-            "Requirement already satisfied: anyio<5,>=3.5.0 in /usr/local/lib/python3.12/dist-packages (from groq) (4.13.0)\n",
-            "Requirement already satisfied: distro<2,>=1.7.0 in /usr/local/lib/python3.12/dist-packages (from groq) (1.9.0)\n",
-            "Requirement already satisfied: httpx<1,>=0.23.0 in /usr/local/lib/python3.12/dist-packages (from groq) (0.28.1)\n",
-            "Requirement already satisfied: pydantic<3,>=1.9.0 in /usr/local/lib/python3.12/dist-packages (from groq) (2.12.3)\n",
-            "Requirement already satisfied: sniffio in /usr/local/lib/python3.12/dist-packages (from groq) (1.3.1)\n",
-            "Requirement already satisfied: typing-extensions<5,>=4.14 in /usr/local/lib/python3.12/dist-packages (from groq) (4.15.0)\n",
-            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.12/dist-packages (from anyio<5,>=3.5.0->groq) (3.18)\n",
-            "Requirement already satisfied: certifi in /usr/local/lib/python3.12/dist-packages (from httpx<1,>=0.23.0->groq) (2026.5.20)\n",
-            "Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.12/dist-packages (from httpx<1,>=0.23.0->groq) (1.0.9)\n",
-            "Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.12/dist-packages (from httpcore==1.*->httpx<1,>=0.23.0->groq) (0.16.0)\n",
-            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->groq) (0.7.0)\n",
-            "Requirement already satisfied: pydantic-core==2.41.4 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->groq) (2.41.4)\n",
-            "Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->groq) (0.4.2)\n",
-            "Downloading groq-1.5.0-py3-none-any.whl (143 kB)\n",
-            "\u001b[?25l   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/143.7 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m143.7/143.7 kB\u001b[0m \u001b[31m8.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hInstalling collected packages: groq\n",
-            "Successfully installed groq-1.5.0\n",
-            "Collecting pypdf\n",
-            "  Downloading pypdf-6.14.2-py3-none-any.whl.metadata (7.2 kB)\n",
-            "Downloading pypdf-6.14.2-py3-none-any.whl (349 kB)\n",
-            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m349.5/349.5 kB\u001b[0m \u001b[31m22.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hInstalling collected packages: pypdf\n",
-            "Successfully installed pypdf-6.14.2\n",
-            "Collecting python-docx\n",
-            "  Downloading python_docx-1.2.0-py3-none-any.whl.metadata (2.0 kB)\n",
-            "Requirement already satisfied: lxml>=3.1.0 in /usr/local/lib/python3.12/dist-packages (from python-docx) (6.1.1)\n",
-            "Requirement already satisfied: typing_extensions>=4.9.0 in /usr/local/lib/python3.12/dist-packages (from python-docx) (4.15.0)\n",
-            "Downloading python_docx-1.2.0-py3-none-any.whl (252 kB)\n",
-            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m253.0/253.0 kB\u001b[0m \u001b[31m12.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hInstalling collected packages: python-docx\n",
-            "Successfully installed python-docx-1.2.0\n",
-            "Collecting fpdf2\n",
-            "  Downloading fpdf2-2.8.7-py3-none-any.whl.metadata (81 kB)\n",
-            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m81.0/81.0 kB\u001b[0m \u001b[31m5.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hRequirement already satisfied: defusedxml in /usr/local/lib/python3.12/dist-packages (from fpdf2) (0.7.1)\n",
-            "Requirement already satisfied: Pillow!=9.2.*,>=8.3.2 in /usr/local/lib/python3.12/dist-packages (from fpdf2) (11.3.0)\n",
-            "Requirement already satisfied: fonttools>=4.34.0 in /usr/local/lib/python3.12/dist-packages (from fpdf2) (4.63.0)\n",
-            "Downloading fpdf2-2.8.7-py3-none-any.whl (327 kB)\n",
-            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m327.1/327.1 kB\u001b[0m \u001b[31m11.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hInstalling collected packages: fpdf2\n",
-            "Successfully installed fpdf2-2.8.7\n",
-            "Collecting streamlit\n",
-            "  Downloading streamlit-1.58.0-py3-none-any.whl.metadata (9.6 kB)\n",
-            "Requirement already satisfied: altair!=5.4.0,!=5.4.1,<7,>=4.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (5.5.0)\n",
-            "Requirement already satisfied: blinker<2,>=1.5.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (1.9.0)\n",
-            "Requirement already satisfied: cachetools<8,>=5.5 in /usr/local/lib/python3.12/dist-packages (from streamlit) (6.2.6)\n",
-            "Requirement already satisfied: click<9,>=7.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (8.4.1)\n",
-            "Requirement already satisfied: gitpython!=3.1.19,<4,>=3.0.7 in /usr/local/lib/python3.12/dist-packages (from streamlit) (3.1.50)\n",
-            "Requirement already satisfied: numpy<3,>=1.23 in /usr/local/lib/python3.12/dist-packages (from streamlit) (2.0.2)\n",
-            "Requirement already satisfied: packaging>=20 in /usr/local/lib/python3.12/dist-packages (from streamlit) (26.2)\n",
-            "Requirement already satisfied: pandas<4,>=1.4.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (2.2.2)\n",
-            "Requirement already satisfied: pillow<13,>=7.1.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (11.3.0)\n",
-            "Collecting pydeck<1,>=0.8.0b4 (from streamlit)\n",
-            "  Downloading pydeck-0.9.2-py2.py3-none-any.whl.metadata (4.2 kB)\n",
-            "Requirement already satisfied: protobuf<8,>=3.20 in /usr/local/lib/python3.12/dist-packages (from streamlit) (5.29.6)\n",
-            "Requirement already satisfied: pyarrow>=7.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (18.1.0)\n",
-            "Requirement already satisfied: requests<3,>=2.27 in /usr/local/lib/python3.12/dist-packages (from streamlit) (2.32.4)\n",
-            "Requirement already satisfied: tenacity<10,>=8.1.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (9.1.4)\n",
-            "Requirement already satisfied: toml<2,>=0.10.1 in /usr/local/lib/python3.12/dist-packages (from streamlit) (0.10.2)\n",
-            "Requirement already satisfied: typing-extensions<5,>=4.10.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (4.15.0)\n",
-            "Requirement already satisfied: starlette>=0.40.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (0.52.1)\n",
-            "Requirement already satisfied: uvicorn>=0.30.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (0.49.0)\n",
-            "Requirement already satisfied: httptools>=0.6.3 in /usr/local/lib/python3.12/dist-packages (from streamlit) (0.8.0)\n",
-            "Requirement already satisfied: anyio>=4.0.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (4.13.0)\n",
-            "Requirement already satisfied: python-multipart>=0.0.10 in /usr/local/lib/python3.12/dist-packages (from streamlit) (0.0.32)\n",
-            "Requirement already satisfied: websockets>=12.0.0 in /usr/local/lib/python3.12/dist-packages (from streamlit) (15.0.1)\n",
-            "Requirement already satisfied: itsdangerous>=2.1.2 in /usr/local/lib/python3.12/dist-packages (from streamlit) (2.2.0)\n",
-            "Requirement already satisfied: watchdog<7,>=2.1.5 in /usr/local/lib/python3.12/dist-packages (from streamlit) (6.0.0)\n",
-            "Requirement already satisfied: jinja2 in /usr/local/lib/python3.12/dist-packages (from altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (3.1.6)\n",
-            "Requirement already satisfied: jsonschema>=3.0 in /usr/local/lib/python3.12/dist-packages (from altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (4.26.0)\n",
-            "Requirement already satisfied: narwhals>=1.14.2 in /usr/local/lib/python3.12/dist-packages (from altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (2.22.1)\n",
-            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.12/dist-packages (from anyio>=4.0.0->streamlit) (3.18)\n",
-            "Requirement already satisfied: gitdb<5,>=4.0.1 in /usr/local/lib/python3.12/dist-packages (from gitpython!=3.1.19,<4,>=3.0.7->streamlit) (4.0.12)\n",
-            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas<4,>=1.4.0->streamlit) (2.9.0.post0)\n",
-            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas<4,>=1.4.0->streamlit) (2025.2)\n",
-            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas<4,>=1.4.0->streamlit) (2026.2)\n",
-            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/dist-packages (from requests<3,>=2.27->streamlit) (3.4.7)\n",
-            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/dist-packages (from requests<3,>=2.27->streamlit) (2.5.0)\n",
-            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests<3,>=2.27->streamlit) (2026.5.20)\n",
-            "Requirement already satisfied: h11>=0.8 in /usr/local/lib/python3.12/dist-packages (from uvicorn>=0.30.0->streamlit) (0.16.0)\n",
-            "Requirement already satisfied: smmap<6,>=3.0.1 in /usr/local/lib/python3.12/dist-packages (from gitdb<5,>=4.0.1->gitpython!=3.1.19,<4,>=3.0.7->streamlit) (5.0.3)\n",
-            "Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/dist-packages (from jinja2->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (3.0.3)\n",
-            "Requirement already satisfied: attrs>=22.2.0 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (26.1.0)\n",
-            "Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (2025.9.1)\n",
-            "Requirement already satisfied: referencing>=0.28.4 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (0.37.0)\n",
-            "Requirement already satisfied: rpds-py>=0.25.0 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit) (2026.5.1)\n",
-            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas<4,>=1.4.0->streamlit) (1.17.0)\n",
-            "Downloading streamlit-1.58.0-py3-none-any.whl (9.2 MB)\n",
-            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m9.2/9.2 MB\u001b[0m \u001b[31m94.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hDownloading pydeck-0.9.2-py2.py3-none-any.whl (11.3 MB)\n",
-            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m11.3/11.3 MB\u001b[0m \u001b[31m83.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
-            "\u001b[?25hInstalling collected packages: pydeck, streamlit\n",
-            "Successfully installed pydeck-0.9.2 streamlit-1.58.0\n"
-          ]
-        }
-      ],
-      "source": [
-        "!pip install groq\n",
-        "!pip install pypdf\n",
-        "!pip install python-docx\n",
-        "!pip install fpdf2\n",
-        "!pip install streamlit"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "GROQ_API_kEy = userdata.get('API_d')"
-      ],
-      "metadata": {
-        "id": "6g89NIoPjCMe"
-      },
-      "execution_count": 3,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "import streamlit as st\n",
-        "from groq import Groq\n",
-        "from pypdf import PdfReader\n",
-        "import io\n",
-        "from google.colab import userdata\n",
-        "\n",
-        "# 1. إعدادات الصفحة وواجهة المستخدم المتقدمة باسم المنتج PolyCV AI\n",
-        "st.set_page_config(page_title=\"PolyCV AI - Global CV Translator\", page_icon=\"🌐\", layout=\"wide\")\n",
-        "\n",
-        "# تم تصحيح الكلمة هنا بالملي لتصبح unsafe_allow_html\n",
-        "st.markdown(\"\"\"\n",
-        "    <style>\n",
-        "    .main-title { font-size: 34px; font-weight: bold; text-align: center; color: #1E3A8A; margin-bottom: 5px; }\n",
-        "    .brand-sub { font-size: 14px; font-weight: bold; text-align: center; color: #3B82F6; letter-spacing: 2px; margin-bottom: 10px; }\n",
-        "    .subtitle { font-size: 18px; text-align: center; color: #4B5563; margin-bottom: 30px; }\n",
-        "    </style>\n",
-        "\"\"\", unsafe_allow_html=True)\n",
-        "\n",
-        "st.markdown('<div class=\"main-title\">🌐 PolyCV AI</div>', unsafe_allow_html=True)\n",
-        "st.markdown('<div class=\"brand-sub\">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)\n",
-        "st.markdown('<div class=\"subtitle\">ترجم وحوّر عدة سير ذاتية في نفس الوقت باحترافية مطلقة متوافقة مع أنظمة الفرز العالمية دون أي هلوسة أو مساس ببياناتك الحساسة</div>', unsafe_allow_html=True)\n",
-        "\n",
-        "# 2. جلب مفتاح الـ API تلقائياً من الـ Secrets الخاصة بك بأمان بـ \"إرادة الدي\"\n",
-        "try:\n",
-        "    GROQ_API_KEY = userdata.get('API_d')\n",
-        "except Exception:\n",
-        "    GROQ_API_KEY = None\n",
-        "\n",
-        "# خيار يدوي احتياطي في الشريط الجانبي لو لم يقرأ من البيئة مباشرة\n",
-        "st.sidebar.header(\"⚙️ PolyCV AI Control Panel\")\n",
-        "if not GROQ_API_KEY:\n",
-        "    api_key_input = st.sidebar.text_input(\"أدخل مفتاح Groq API Key يدوياً:\", type=\"password\")\n",
-        "    final_api_key = api_key_input\n",
-        "else:\n",
-        "    st.sidebar.success(\"✅ تم جلب مفتاح API_d بأمان من الـ Secrets!\")\n",
-        "    final_api_key = GROQ_API_KEY\n",
-        "\n",
-        "source_lang = st.sidebar.selectbox(\n",
-        "    \"لغة السير الذاتية الحالية (Original Language):\",\n",
-        "    [\"Arabic\", \"English\", \"French\", \"Spanish\", \"German\", \"Turkish\", \"Hindi\"]\n",
-        ")\n",
-        "\n",
-        "target_lang = st.sidebar.selectbox(\n",
-        "    \"اللغة المستهدفة للترجمة (Target Language):\",\n",
-        "    [\"English\", \"Arabic\", \"French\", \"Spanish\", \"German\", \"Turkish\", \"Urdu\"],\n",
-        "    index=0\n",
-        ")\n",
-        "\n",
-        "# 3. قسم رفع ملفات متعددة (الميزة الاحترافية)\n",
-        "st.subheader(\"📁 ارفع ملف سيرة ذاتية واحد أو أكثر (PDF)\")\n",
-        "uploaded_files = st.file_uploader(\"يمكنك اختيار عدة ملفات PDF معاً وترجمتها دفعة واحدة عبر PolyCV AI:\", type=[\"pdf\"], accept_multiple_files=True)\n",
-        "\n",
-        "cv_dict = {} # قاموس لتخزين نص كل ملف باسمه\n",
-        "\n",
-        "if uploaded_files:\n",
-        "    for uploaded_file in uploaded_files:\n",
-        "        try:\n",
-        "            pdf_reader = PdfReader(io.BytesIO(uploaded_file.read()))\n",
-        "            extracted_pages = [page.extract_text() for page in pdf_reader.pages]\n",
-        "            full_text = \"\\n\".join(extracted_pages)\n",
-        "            if full_text.strip():\n",
-        "                cv_dict[uploaded_file.name] = full_text\n",
-        "            else:\n",
-        "                st.warning(f\"⚠️ الملف '{uploaded_file.name}' يبدو فارغاً أو عبارة عن صور ولم نتمكن من قراءة نصه.\")\n",
-        "        except Exception as e:\n",
-        "            st.error(f\"حدث خطأ أثناء قراءة الملف {uploaded_file.name}: {e}\")\n",
-        "\n",
-        "    if cv_dict:\n",
-        "        st.success(f\"✅ PolyCV AI جاهز الآن لمعالجة ({len(cv_dict)}) سيرة ذاتية فوراً!\")\n",
-        "\n",
-        "# 4. زر التشغيل والمعالجة المتوازية عبر Groq\n",
-        "if st.button(\"بدء الترجمة الجماعية عبر PolyCV AI 🚀\", use_container_width=True):\n",
-        "    if not final_api_key:\n",
-        "        st.error(\"❌ الرجاء التأكد من وجود مفتاح Groq API Key في الـ Secrets أو إدخاله في الشريط الجانبي!\")\n",
-        "    elif not cv_dict:\n",
-        "        st.warning(\"⚠️ الرجاء رفع ملفات PDF تحتوي على نصوص واضحة أولاً.\")\n",
-        "    elif source_lang == target_lang:\n",
-        "        st.warning(\"⚠️ لغة المدخلات هي نفسها لغة المخرجات المستهدفة. يرجى تغيير اللغة المستهدفة.\")\n",
-        "    else:\n",
-        "        # إنشاء ألسنة (Tabs) لعرض نتائج كل ملف بشكل منفصل ومنظم\n",
-        "        result_tabs = st.tabs(list(cv_dict.keys()))\n",
-        "\n",
-        "        # الاتصال بـ Groq Cloud\n",
-        "        try:\n",
-        "            client = Groq(api_key=final_api_key)\n",
-        "\n",
-        "            # البرومبت الصارم جداً والمثبت لمنع التخريف والهلوسة والالتزام بالتفاصيل الشخصية والتواريخ\n",
-        "            system_instruction = \"\"\"\n",
-        "            You are PolyCV AI, an advanced, strict, non-conversational CV Translator and ATS Optimization expert.\n",
-        "            Your ultimate priority is zero-hallucination. You must preserve the integrity of the data with 100% fidelity.\n",
-        "\n",
-        "            UNBREAKABLE INSTRUCTIONS TO PREVENT HALLUCINATION:\n",
-        "            1. NEVER alter, forge, change, omit, or add any numbers, years, dates, phone numbers, email addresses, websites, or hyperlinks. They must remain exactly as they appear in the original source text.\n",
-        "            2. For proper nouns (names of universities, companies, cities, or people), keep them accurate, only translate or transliterate them properly to the target language without changing the entity itself.\n",
-        "            3. Translate the professional skills, responsibilities, and achievements into executive, high-level corporate terminology appropriate for ATS optimization.\n",
-        "            4. Do NOT output any conversational text, pleasantries, or introductory sentences like \"Here is your translation\". Output ONLY the finalized professional Markdown format of the CV.\n",
-        "            5. Double-check all dates and contacts against the input before outputting.\n",
-        "            \"\"\"\n",
-        "\n",
-        "            for index, (file_name, cv_text) in enumerate(cv_dict.items()):\n",
-        "                with result_tabs[index]:\n",
-        "                    with st.spinner(f\"⚡ PolyCV AI يترجم حالياً: {file_name}...\"):\n",
-        "\n",
-        "                        user_prompt = f\"\"\"\n",
-        "                        Translate this specific CV from {source_lang} to {target_lang}. Maximize ATS optimization.\n",
-        "\n",
-        "                        CV Input Text:\n",
-        "                        ---\n",
-        "                        {cv_text}\n",
-        "                        ---\n",
-        "                        \"\"\"\n",
-        "\n",
-        "                        completion = client.chat.completions.create(\n",
-        "                            model=\"llama3-70b-8192\",\n",
-        "                            messages=[\n",
-        "                                {\"role\": \"system\", \"content\": system_instruction},\n",
-        "                                {\"role\": \"user\", \"content\": user_prompt}\n",
-        "                            ],\n",
-        "                            temperature=0.0, # تثبيت العقل البرمجي ومنع التخريف والابتكار\n",
-        "                            max_tokens=4000\n",
-        "                        )\n",
-        "\n",
-        "                        translated_output = completion.choices.message.content\n",
-        "\n",
-        "                        st.success(f\"🎉 تم إنهاء ترجمة: {file_name}\")\n",
-        "                        st.markdown(f\"### 📄 السيرة الذاتية المترجمة لملف: {file_name}\")\n",
-        "                        st.markdown(translated_output)\n",
-        "                        st.text_area(f\"انسخ نص {file_name} المترجم من هنا:\", value=translated_output, height=250, key=f\"text_{index}\")\n",
-        "\n",
-        "        except Exception as e:\n",
-        "            st.error(f\"❌ حدث خطأ أثناء الاتصال بخوادم Groq: {e}\")\n",
-        "\n",
-        "st.sidebar.markdown(\"---\")\n",
-        "st.sidebar.write(\"⚡ Powered by PolyCV AI Engine & Groq Cloud\")\n",
-        "st.sidebar.write(\"Developed by Ibrahim - Pre-revenue Startup Studio\")"
-      ],
-      "metadata": {
-        "id": "dFqbWwQFj5_9",
-        "colab": {
-          "base_uri": "https://localhost:8080/"
-        },
-        "outputId": "c3ad1785-010f-49bf-bac4-7b0444513e54"
-      },
-      "execution_count": 5,
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stderr",
-          "text": [
-            "2026-06-25 08:17:52.726 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.728 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.874 \n",
-            "  \u001b[33m\u001b[1mWarning:\u001b[0m to view this Streamlit app on a browser, run it with the following\n",
-            "  command:\n",
-            "\n",
-            "    streamlit run /usr/local/lib/python3.12/dist-packages/colab_kernel_launcher.py [ARGUMENTS]\n",
-            "2026-06-25 08:17:52.875 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.876 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.877 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.879 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.880 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.882 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.883 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.884 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.886 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.887 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:52.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.155 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.156 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.157 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.158 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.159 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.161 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.163 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.164 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.165 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.166 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.167 Session state does not function when running a script without `streamlit run`\n",
-            "2026-06-25 08:17:54.168 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.169 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.169 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.171 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.171 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.172 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.173 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.173 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.175 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.175 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.176 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.177 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.178 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.179 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.180 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.181 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.181 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.182 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.183 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.185 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.186 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.187 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.188 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.189 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.189 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.191 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.191 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.192 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.193 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.194 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.195 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.196 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.196 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
-            "2026-06-25 08:17:54.198 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
-          ]
-        }
-      ]
-    }
-  ]
-}
+import streamlit as st
+from groq import Groq
+from pypdf import PdfReader
+import io
+import os
+
+# 1. إعدادات الصفحة وواجهة المستخدم المتقدمة باسم المنتج PolyCV AI
+st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
+
+st.markdown("""
+    <style>
+    .main-title { font-size: 34px; font-weight: bold; text-align: center; color: #1E3A8A; margin-bottom: 5px; }
+    .brand-sub { font-size: 14px; font-weight: bold; text-align: center; color: #3B82F6; letter-spacing: 2px; margin-bottom: 10px; }
+    .subtitle { font-size: 18px; text-align: center; color: #4B5563; margin-bottom: 30px; }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">ترجم وحوّر عدة سير ذاتية في نفس الوقت باحترافية مطلقة متوافقة مع أنظمة الفرز العالمية دون أي هلوسة أو مساس ببياناتك الحساسة</div>', unsafe_allow_html=True)
+
+# 2. جلب مفتاح الـ API بأمان متوافق مع Streamlit Cloud
+GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
+
+st.sidebar.header("⚙️ PolyCV AI Control Panel")
+if not GROQ_API_KEY:
+    api_key_input = st.sidebar.text_input("أدخل مفتاح Groq API Key يدوياً:", type="password")
+    final_api_key = api_key_input
+else:
+    st.sidebar.success("✅ تم جلب مفتاح API_d بأمان من الـ Secrets!")
+    final_api_key = GROQ_API_KEY
+
+source_lang = st.sidebar.selectbox(
+    "لغة السير الذاتية الحالية (Original Language):",
+    ["Arabic", "English", "French", "Spanish", "German", "Turkish", "Hindi"]
+)
+
+target_lang = st.sidebar.selectbox(
+    "اللغة المستهدفة للترجمة (Target Language):",
+    ["English", "Arabic", "French", "Spanish", "German", "Turkish", "Urdu"],
+    index=0
+)
+
+# 3. قسم رفع ملفات متعددة (الميزة الاحترافية)
+st.subheader("📁 ارفع ملف سيرة ذاتية واحد أو أكثر (PDF)")
+uploaded_files = st.file_uploader("يمكنك اختيار عدة ملفات PDF معاً وترجمتها دفعة واحدة عبر PolyCV AI:", type=["pdf"], accept_multiple_files=True)
+
+cv_dict = {}
+
+if uploaded_files:
+    for uploaded_file in uploaded_files:
+        try:
+            pdf_reader = PdfReader(io.BytesIO(uploaded_file.read()))
+            extracted_pages = [page.extract_text() for page in pdf_reader.pages]
+            full_text = "\n".join(extracted_pages)
+            if full_text.strip():
+                cv_dict[uploaded_file.name] = full_text
+            else:
+                st.warning(f"⚠️ الملف '{uploaded_file.name}' يبدو فارغاً أو عبارة عن صور ولم نتمكن من قراءة نصه.")
+        except Exception as e:
+            st.error(f"حدث خطأ أثناء قراءة الملف {uploaded_file.name}: {e}")
+    
+    if cv_dict:
+        st.success(f"✅ PolyCV AI جاهز الآن لمعالجة ({len(cv_dict)}) سيرة ذاتية فوراً!")
+
+# 4. زر التشغيل والمعالجة عبر Groq
+if st.button("بدء الترجمة الجماعية عبر PolyCV AI 🚀", use_container_width=True):
+    if not final_api_key:
+        st.error("❌ الرجاء التأكد من وجود مفتاح Groq API Key في الـ Secrets أو إدخاله في الشريط الجانبي!")
+    elif not cv_dict:
+        st.warning("⚠️ الرجاء رفع ملفات PDF تحتوي على نصوص واضحة أولاً.")
+    elif source_lang == target_lang:
+        st.warning("⚠️ لغة المدخلات هي نفسها لغة المخرجات المستهدفة. يرجى تغيير اللغة المستهدفة.")
+    else:
+        result_tabs = st.tabs(list(cv_dict.keys()))
+        
+        try:
+            client = Groq(api_key=final_api_key)
+            
+            system_instruction = """
+            You are PolyCV AI, an advanced, strict, non-conversational CV Translator and ATS Optimization expert.
+            Your ultimate priority is zero-hallucination. You must preserve the integrity of the data with 100% fidelity.
+            
+            UNBREAKABLE INSTRUCTIONS TO PREVENT HALLUCINATION:
+            1. NEVER alter, forge, change, omit, or add any numbers, years, dates, phone numbers, email addresses, websites, or hyperlinks. They must remain exactly as they appear in the original source text.
+            2. For proper nouns (names of universities, companies, cities, or people), keep them accurate, only translate or transliterate them properly to the target language without changing the entity itself.
+            3. Translate the professional skills, responsibilities, and achievements into executive, high-level corporate terminology appropriate for ATS optimization.
+            4. Do NOT output any conversational text, pleasantries, or introductory sentences like "Here is your translation". Output ONLY the finalized professional Markdown format of the CV.
+            5. Double-check all dates and contacts against the input before outputting.
+            """
+            
+            for index, (file_name, cv_text) in enumerate(cv_dict.items()):
+                with result_tabs[index]:
+                    with st.spinner(f"⚡ PolyCV AI يترجم حالياً: {file_name}..."):
+                        
+                        user_prompt = f"""
+                        Translate this specific CV from {source_lang} to {target_lang}. Maximize ATS optimization.
+                        
+                        CV Input Text:
+                        ---
+                        {cv_text}
+                        ---
+                        """
+                        
+                        completion = client.chat.completions.create(
+                            model="llama3-70b-8192",
+                            messages=[
+                                {"role": "system", "content": system_instruction},
+                                {"role": "user", "content": user_prompt}
+                            ],
+                            temperature=0.0,
+                            max_tokens=4000
+                        )
+                        
+                        translated_output = completion.choices.message.content
+                        
+                        st.success(f"🎉 تم إنهاء ترجمة: {file_name}")
+                        st.markdown(f"### 📄 السيرة الذاتية المترجمة لملف: {file_name}")
+                        st.markdown(translated_output)
+                        st.text_area(f"انسخ نص {file_name} المترجم من هنا:", value=translated_output, height=250, key=f"text_{index}")
+                        
+        except Exception as e:
+            st.error(f"❌ حدث خطأ أثناء الاتصال بخوادم Groq: {e}")
+
+st.sidebar.markdown("---")
+st.sidebar.write("⚡ Powered by PolyCV AI Engine & Groq Cloud")
+st.sidebar.write("Developed by Ibrahim - Pre-revenue Startup Studio")
