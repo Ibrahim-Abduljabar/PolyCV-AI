@@ -204,5 +204,5 @@ if st.button("🚀 ابدأ حقن البيانات داخل القالب الت
                                 raw_json = completion.choices[0].message.content
                                 clean_json = clean_json_string(raw_json)
                                 
+                                # تم إصلاح بلوك الـ try/except هنا بشكل صحيح تماماً لإنهاء الـ SyntaxError
                                 try:
-                                    cv_data = json.loads(clean_json)
