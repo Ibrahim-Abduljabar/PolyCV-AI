@@ -186,7 +186,7 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                     {"role": "system", "content": system_instruction},
                                     {"role": "user", "content": user_prompt},
                                 ],
-                                temperature=0.1
+                                temperature=0
                             )
                             
                             raw_json = completion.choices[0].message.content
