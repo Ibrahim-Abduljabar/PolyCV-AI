@@ -5,7 +5,7 @@ from fpdf import FPDF
 import io
 import os
 
-# 1. التهيئة وإعدادات الصفحة لواجهة المستخدم PolyCV AI
+# 1. التهيئة وإعدادات واجهة المستخدم لـ PolyCV AI
 st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
 
 st.markdown("""
@@ -20,27 +20,27 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية إلى عدة لغات احترافية في ثوانٍ معدودة بدقة متناهية مع نظام تحسين معايير الـ ATS</div>', unsafe_allow_html=True)
 
-# دالة توليد الـ PDF الاحترافية مع الالتفاف التلقائي للنصوص
+# دالة توليد الـ PDF الاحترافية بعد التفكير وإصلاح التفاف النص جذرياً
 def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_margins(15, 15, 15)
+    # ضبط هوامش الورقة بمقدار 20 ملم من كل جانب كمعيار احترافي للسير الذاتية
+    pdf.set_margins(20, 20, 20)
     pdf.set_font("Helvetica", size=11)
     
-    # تنظيف نصوص الـ Markdown لضمان عدم حدوث تشويه
+    # تنظيف نصوص الـ Markdown تماماً لمنع تشويه الأحرف والرموز
     clean_text = text.replace("**", "").replace("*", "").replace("###", "").replace("##", "")
     
-    for line in clean_text.split('\n'):
-        if not line.strip():
-            pdf.ln(4)
-            continue
-        # ترميز آمن لمنع رموز كسر الحروف
-        clean_line = line.encode('latin-1', 'replace').decode('latin-1')
-        pdf.multi_cell(180, 6, txt=clean_line)
+    # المعالجة الآمنة لترميز النصوص لمنع كسر الحروف والرموز الخاصة
+    safe_text = clean_text.encode('latin-1', 'replace').decode('latin-1')
+    
+    # الحل الجذري: نمرر النص كاملاً داخل الخلية الممتدة بعرض 170 ملم (مساحة الورقة المتاحة بعد الهوامش)
+    # الارتفاع 6 ملم لكل سطر، وهذا يجبر المكتبة داخلياً على الالتفاف والنزول تلقائياً عند نهاية كل سطر
+    pdf.multi_cell(170, 6, txt=safe_text)
         
     return bytes(pdf.output())
 
-# 2. إدارة مفاتيح الـ API لـ Groq (باستخدام متغيرك الأصلي API_d)
+# 2. إدارة مفاتيح الـ API لـ Groq (باستخدام متغيرك الأصلي المعتمد في الـ Secrets)
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -88,7 +88,7 @@ if uploaded_files:
         except Exception as e:
             st.error(f"❌ حدث خطأ أثناء قراءة ملف {uploaded_file.name}: {e}")
 
-# 4. زر التفعيل والمعالجة والترجمة
+# 4. زر التفعيل والمعالجة والترجمة عبر نموذج llama-3.3 الشغال
 if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_container_width=True):
     if not GROQ_API_KEY:
         st.error("❌ لم يتم العثور على مفتاح API الخاص بصاحب الموقع في الإعدادات السرية (Secrets).")
@@ -141,13 +141,12 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                     max_tokens=4000
                                 )
                                 
-                                # تم إصلاح وإغلاق القوس البرمجي هنا بشكل صحيح ومضمون
                                 translated_output = completion.choices[0].message.content
                                 
                                 st.success(f"✅ تم إنتاج السيرة الذاتية باللغة {t_lang} بنجاح واحترافية عالية!")
                                 st.markdown(translated_output)
                                 
-                                # توليد الـ PDF بالدالة المحدثة الآمنة
+                                # توليد الـ PDF بالمنطق المحدث والمستقر
                                 pdf_data = create_pdf(translated_output)
                                 
                                 st.download_button(
