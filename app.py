@@ -10,9 +10,9 @@ st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="�
 
 st.markdown("""
 <style>
-    .main-title { font-size: 34px; font-weight: bold; text-align: center; color: #1E3A8A; margin-bottom: 5px; }
-    .brand-sub { font-size: 14px; font-weight: bold; text-align: center; color: #3B82F6; letter-spacing: 2px; margin-bottom: 10px; }
-    .subtitle { font-size: 18px; text-align: center; color: #4B5563; margin-bottom: 30px; }
+   .main-title { font-size: 34px; font-weight: bold; text-align: center; color: #1E3A8A; margin-bottom: 5px; }
+   .brand-sub { font-size: 14px; font-weight: bold; text-align: center; color: #3B82F6; letter-spacing: 2px; margin-bottom: 10px; }
+   .subtitle { font-size: 18px; text-align: center; color: #4B5563; margin-bottom: 30px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -20,14 +20,12 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Translate and localize your resume with executive premium layout templates</div>', unsafe_allow_html=True)
 
-
 def convert_html_to_pdf(html_code):
     pdf_buffer = io.BytesIO()
     pisa_status = pisa.pisaDocument(io.BytesIO(html_code.encode("utf-8")), pdf_buffer)
     if not pisa_status.err:
         return pdf_buffer.getvalue()
     return None
-
 
 def clean_json_string(raw_str):
     raw_str = raw_str.strip()
@@ -39,16 +37,15 @@ def clean_json_string(raw_str):
         raw_str = raw_str[:-3]
     return raw_str.strip()
 
-
 def render_premium_template(data):
     name = data.get("name", "")
     title = data.get("professional_title", "")
     contact = data.get("contact_information", {})
     summary = data.get("professional_summary", "")
-    
+
     contact_lines = [f"<li>{k}: {v}</li>" for k, v in contact.items() if v]
     contact_html = "".join(contact_lines)
-    
+
     experience_html = ""
     for exp in data.get("work_experience", []):
         achievements_li = "".join([f"<li>{ach}</li>" for ach in exp.get("achievements", [])])
@@ -61,7 +58,7 @@ def render_premium_template(data):
             <ul>{achievements_li}</ul>
         </div>
         """
-        
+
     education_html = ""
     for edu in data.get("education", []):
         education_html += f"""
@@ -82,7 +79,7 @@ def render_premium_template(data):
         <meta charset="utf-8">
         <style>
             @page {{ size: letter; margin: 15mm; }}
-            body {{ font-family: Helvetica, Arial, sans-serif; color: #333333; line-height: 1.4; font-size: 10pt; }}
+            body {{ font-family: Helvetica, Arial, sans-serif; color: #333; line-height: 1.4; font-size: 10pt; }}
             .header {{ border-bottom: 2px solid #1E3A8A; padding-bottom: 10px; margin-bottom: 15px; }}
             .name {{ font-size: 24pt; font-weight: bold; color: #1E3A8A; text-transform: uppercase; margin: 0; }}
             .title {{ font-size: 12pt; color: #3B82F6; font-weight: bold; margin: 2px 0 5px 0; letter-spacing: 1px; }}
@@ -121,6 +118,7 @@ def render_premium_template(data):
     """
     return html_template
 
+# ربط المفتاح الصحيح API_d هنا بشكل صارم
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -198,4 +196,13 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)      
-                                cv_data = json.loads(clean_json)
+                                
+                                try:
+                                    cv_data = json.loads(clean_json)
+                                    html_resume = render_premium_template(cv_data)
+                                    
+                                    st.markdown("### 📄 Premium Layout Preview")
+                                    st.components.v1.html(html_resume, height=600, scrolling=True)
+                                    
+                                    pdf_data = convert_html_to_pdf(html_resume)
+                                    if pdf_data:
