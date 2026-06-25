@@ -6,7 +6,6 @@ import json
 import io
 import os
 
-# 1. Page Configuration and Theme Styling
 st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
 
 st.markdown("""
@@ -21,7 +20,7 @@ st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=Tr
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Translate and localize your resume with executive premium layout templates</div>', unsafe_allow_html=True)
 
-# Helper function to convert HTML string to PDF bytes
+
 def convert_html_to_pdf(html_code):
     pdf_buffer = io.BytesIO()
     pisa_status = pisa.pisaDocument(io.BytesIO(html_code.encode("utf-8")), pdf_buffer)
@@ -29,7 +28,7 @@ def convert_html_to_pdf(html_code):
         return pdf_buffer.getvalue()
     return None
 
-# Helper function to clean markdown wrappers around JSON
+
 def clean_json_string(raw_str):
     raw_str = raw_str.strip()
     if raw_str.startswith("```json"):
@@ -40,7 +39,7 @@ def clean_json_string(raw_str):
         raw_str = raw_str[:-3]
     return raw_str.strip()
 
-# Function to inject JSON data into the premium executive HTML template
+
 def render_premium_template(data):
     name = data.get("name", "")
     title = data.get("professional_title", "")
@@ -122,7 +121,6 @@ def render_premium_template(data):
     """
     return html_template
 
-# 2. Sidebar Configuration and API Secret management
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -133,7 +131,6 @@ num_languages = st.sidebar.radio("Additional target languages:", (1, 2, 3), inde
 target_languages = [target_lang_1]
 target_languages = list(set(target_languages))
 
-# 3. File Upload Interface
 st.subheader("📁 Upload Resume Files (PDF)")
 uploaded_files = st.file_uploader("Select PDF resume profiles:", type=["pdf"], accept_multiple_files=True)
 
@@ -149,7 +146,6 @@ if uploaded_files:
         except Exception as e:
             st.error(f"Error reading file: {e}")
 
-# 4. Core Pipeline Execution
 if st.button("🚀 Process and Inject Data Into Premium Template", use_container_width=True):
     if not GROQ_API_KEY:
         st.error("Missing API Key (API_d) in deployment secrets.")
@@ -206,4 +202,4 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 try:
                                     cv_data = json.loads(clean_json)
                                     
-                                    # Render the data into premium HTML
+
