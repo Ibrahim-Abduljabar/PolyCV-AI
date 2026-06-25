@@ -202,11 +202,4 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
                                 
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)
-                                
-        
-                                try:
-                                    cv_data = json.loads(clean_json)
-                                except Exception as e:
-                                     st.error(f"Error: {e}")
-                                     cv_data = {}
-                            
+                                cv_data = json.loads(clean_json)
