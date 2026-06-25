@@ -5,9 +5,8 @@ from xhtml2pdf import pisa
 import json
 import io
 import os
-import re
 
-# 1. التهيئة وإعدادات الصفحة لواجهة المستخدم PolyCV AI
+# 1. Page Configuration and Theme Styling
 st.set_page_config(page_title="PolyCV AI - Global CV Translator", page_icon="🌐", layout="wide")
 
 st.markdown("""
@@ -20,9 +19,9 @@ st.markdown("""
 
 st.markdown('<div class="main-title">🌐 PolyCV AI</div>', unsafe_allow_html=True)
 st.markdown('<div class="brand-sub">GLOBAL MULTI-CV TRANSLATION & ATS LOCALIZATION ENGINE</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">قم بترجمة سيرتك الذاتية وحقنها داخل قوالب تنفيذية فاخرة ومصممة بأعلى معايير الـ ATS</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Translate and localize your resume with executive premium layout templates</div>', unsafe_allow_html=True)
 
-# دالة تحويل الـ HTML إلى بايتات PDF جاهزة للتحميل
+# Helper function to convert HTML string to PDF bytes
 def convert_html_to_pdf(html_code):
     pdf_buffer = io.BytesIO()
     pisa_status = pisa.pisaDocument(io.BytesIO(html_code.encode("utf-8")), pdf_buffer)
@@ -30,7 +29,7 @@ def convert_html_to_pdf(html_code):
         return pdf_buffer.getvalue()
     return None
 
-# دالة لتنظيف مخرجات الـ JSON لضمان عدم حدوث تعليق
+# Helper function to clean markdown wrappers around JSON
 def clean_json_string(raw_str):
     raw_str = raw_str.strip()
     if raw_str.startswith("```json"):
@@ -41,7 +40,7 @@ def clean_json_string(raw_str):
         raw_str = raw_str[:-3]
     return raw_str.strip()
 
-# دالة بناء قالب الـ HTML الفاخر وحقن بيانات الـ JSON بداخله
+# Function to inject JSON data into the premium executive HTML template
 def render_premium_template(data):
     name = data.get("name", "")
     title = data.get("professional_title", "")
@@ -123,20 +122,22 @@ def render_premium_template(data):
     """
     return html_template
 
-# 2. إدارة مفاتيح الـ API لـ Groq (متغيرك الأصلي المعتمد)
+# 2. Sidebar Configuration and API Secret management
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
-source_lang = st.sidebar.selectbox("🌐 اللغة الحالية للسيرة الذاتية:", ["Arabic", "English", "French", "Spanish", "German"])
-target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German"])
-num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية:", [1, 2, 3], index=0)
+source_lang = st.sidebar.selectbox("Original Language:", ["Arabic", "English", "French", "Spanish", "German"])
+target_lang_1 = st.sidebar.selectbox("Target Language:", ["English", "Arabic", "French", "Spanish", "German"])
+
+# Safe tuple mapping for selections
+num_languages = st.sidebar.radio("Additional target languages:", (1, 2, 3), index=0)
 
 target_languages = [target_lang_1]
 target_languages = list(set(target_languages))
 
-# 3. رفع ملفات الـ PDF
-st.subheader("📁 ارفع ملف سيرة ذاتية أو أكثر (PDF)")
-uploaded_files = st.file_uploader("اختر ملفات السير الذاتية الخاصة بك بصيغة PDF:", type=["pdf"], accept_multiple_files=True)
+# 3. File Upload Interface
+st.subheader("📁 Upload Resume Files (PDF)")
+uploaded_files = st.file_uploader("Select PDF resume profiles:", type=["pdf"], accept_multiple_files=True)
 
 cv_dict = {}
 if uploaded_files:
@@ -148,14 +149,14 @@ if uploaded_files:
             if full_text.strip():
                 cv_dict[uploaded_file.name] = full_text
         except Exception as e:
-            st.error(f"❌ حدث خطأ في قراءة الملف: {e}")
+            st.error(f"Error reading file: {e}")
 
-# 4. المعالجة والترجمة الهيكلية
-if st.button("🚀 ابدأ حقن البيانات داخل القالب التنفيذي الفاخر الآن", use_container_width=True):
+# 4. Core Pipeline Execution
+if st.button("🚀 Process and Inject Data Into Premium Template", use_container_width=True):
     if not GROQ_API_KEY:
-        st.error("❌ لم يتم العثور على مفتاح API (API_d) في الإعدادات السرية.")
+        st.error("Missing API Key (API_d) in deployment secrets.")
     elif not cv_dict:
-        st.warning("⚠️ الرجاء رفع ملف PDF أولاً.")
+        st.warning("Please upload at least one valid PDF profile.")
     else:
         try:
             client = Groq(api_key=GROQ_API_KEY)
@@ -185,11 +186,11 @@ if st.button("🚀 ابدأ حقن البيانات داخل القالب الت
             for file_index, (file_name, cv_text) in enumerate(cv_dict.items()):
                 with file_tabs[file_index]:
                     
-                    lang_tabs = st.tabs([f"🌍 إلى {lang}" for lang in target_languages])
+                    lang_tabs = st.tabs([f"To {lang}" for lang in target_languages])
                     for lang_index, t_lang in enumerate(target_languages):
                         with lang_tabs[lang_index]:
                             
-                            with st.spinner(f"⏳ يقوم PolyCV AI بترجمة وتنسيق البيانات إلى قالب ({t_lang})..."):
+                            with st.spinner(f"Translating and rendering premium layout ({t_lang})..."):
                                 user_prompt = f"Translate this CV from {source_lang} to {t_lang} and output the structured JSON:\n\n{cv_text}"
                                 
                                 completion = client.chat.completions.create(
@@ -204,6 +205,6 @@ if st.button("🚀 ابدأ حقن البيانات داخل القالب الت
                                 raw_json = completion.choices.message.content
                                 clean_json = clean_json_string(raw_json)
                                 
-                                # تم إصلاح المحاذاة والمسافات البرمجية هنا بالملي لمنع أي IndentationError
                                 try:
                                     cv_data = json.loads(clean_json)
+                                    premium_html = render_premium_template(cv_data)
