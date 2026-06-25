@@ -118,7 +118,6 @@ def render_premium_template(data):
     """
     return html_template
 
-# ربط المفتاح الصحيح API_d هنا بشكل صارم
 GROQ_API_KEY = st.secrets.get("API_d") or os.environ.get("API_d")
 
 st.sidebar.header("🌐 PolyCV AI Control Panel")
@@ -135,14 +134,11 @@ uploaded_files = st.file_uploader("Select PDF resume profiles:", type=["pdf"], a
 cv_dict = {}
 if uploaded_files:
     for uploaded_file in uploaded_files:
-
-            pdf_reader = PdfReader(io.BytesIO(uploaded_file.read()))
-            extracted_pages = [page.extract_text() for page in pdf_reader.pages]
-            full_text = "\n".join(extracted_pages)
-            if full_text.strip():
-                cv_dict[uploaded_file.name] = full_text
-       
-          
+        pdf_reader = PdfReader(io.BytesIO(uploaded_file.read()))
+        extracted_pages = [page.extract_text() for page in pdf_reader.pages]
+        full_text = "\n".join(extracted_pages)
+        if full_text.strip():
+            cv_dict[uploaded_file.name] = full_text
 
 if st.button("🚀 Process and Inject Data Into Premium Template", use_container_width=True):
     if not GROQ_API_KEY:
@@ -150,51 +146,64 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
     elif not cv_dict:
         st.warning("Please upload at least one valid PDF profile.")
     else:
-            client = Groq(api_key=GROQ_API_KEY)
-            
-            system_instruction = """
-            You are an elite ATS CV parser and translator. You must translate the input CV text and format it into a valid JSON object matching the schema below.
-            Do NOT include any markdown code block wrap. Output ONLY the raw valid JSON string.
-            
-            JSON Schema:
-            {
-                "name": "Full Name",
-                "professional_title": "Target/Current Job Title",
-                "contact_information": {"Phone": "...", "Email": "...", "LinkedIn": "..."},
-                "professional_summary": "Short professional bio paragraph",
-                "work_experience": [
-                    {"role": "Job Title", "company": "Company Name", "dates": "Date Range", "achievements": ["Achievement 1", "Achievement 2"]}
-                ],
-                "education": [
-                    {"degree": "Degree/Major", "institution": "University/School", "dates": "Date Range"}
-                ],
-                "skills": ["Skill 1", "Skill 2"],
-                "languages": ["Language 1", "Language 2"]
-            }
-            """
-            
-            file_tabs = st.tabs(list(cv_dict.keys()))
-            for file_index, (file_name, cv_text) in enumerate(cv_dict.items()):
-                with file_tabs[file_index]:
-                    
-                    lang_tabs = st.tabs([f"To {lang}" for lang in target_languages])
-                    for lang_index, t_lang in enumerate(target_languages):
-                        with lang_tabs[lang_index]:
+        client = Groq(api_key=GROQ_API_KEY)
+        
+        system_instruction = """
+        You are an elite ATS CV parser and translator. You must translate the input CV text and format it into a valid JSON object matching the schema below.
+        Do NOT include any markdown code block wrap. Output ONLY the raw valid JSON string.
+        
+        JSON Schema:
+        {
+            "name": "Full Name",
+            "professional_title": "Target/Current Job Title",
+            "contact_information": {"Phone": "...", "Email": "...", "LinkedIn": "..."},
+            "professional_summary": "Short professional bio paragraph",
+            "work_experience": [
+                {"role": "Job Title", "company": "Company Name", "dates": "Date Range", "achievements": ["Achievement 1", "Achievement 2"]}
+            ],
+            "education": [
+                {"degree": "Degree/Major", "institution": "University/School", "dates": "Date Range"}
+            ],
+            "skills": ["Skill 1", "Skill 2"],
+            "languages": ["Language 1", "Language 2"]
+        }
+        """
+        
+        file_tabs = st.tabs(list(cv_dict.keys()))
+        for file_index, (file_name, cv_text) in enumerate(cv_dict.items()):
+            with file_tabs[file_index]:
+                
+                lang_tabs = st.tabs([f"To {lang}" for lang in target_languages])
+                for lang_index, t_lang in enumerate(target_languages):
+                    with lang_tabs[lang_index]:
+                        
+                        with st.spinner(f"Translating and rendering premium layout ({t_lang})..."):
+                            user_prompt = f"Translate this CV from {source_lang} to {t_lang} and output the structured JSON:\n\n{cv_text}"
                             
-                            with st.spinner(f"Translating and rendering premium layout ({t_lang})..."):
-                                user_prompt = f"Translate this CV from {source_lang} to {t_lang} and output the structured JSON:\n\n{cv_text}"
-                                
-                                completion = client.chat.completions.create(
-                                    model="llama-3.3-70b-versatile",
-                                    messages=[
-                                        {"role": "system", "content": system_instruction},
-                                        {"role": "user", "content": user_prompt},
-                                    ],
-                                    temperature=0.1
+                            completion = client.chat.completions.create(
+                                model="llama-3.3-70b-versatile",
+                                messages=[
+                                    {"role": "system", "content": system_instruction},
+                                    {"role": "user", "content": user_prompt},
+                                ],
+                                temperature=0.1
+                            )
+                            
+                            raw_json = completion.choices[0].message.content
+                            clean_json = clean_json_string(raw_json)      
+                            cv_data = json.loads(clean_json)
+                            
+                            html_resume = render_premium_template(cv_data)
+                            
+                            st.markdown("### 📄 Premium Layout Preview")
+                            st.components.v1.html(html_resume, height=600, scrolling=True)
+                            
+                            pdf_data = convert_html_to_pdf(html_resume)
+                            if pdf_data:
+                                st.download_button(
+                                    label=f"📥 Download {t_lang} PDF Resume",
+                                    data=pdf_data,
+                                    file_name=f"Localized_CV_{t_lang}.pdf",
+                                    mime="application/pdf",
+                                    key=f"btn_{file_name}_{t_lang}"
                                 )
-                                
-                                raw_json = completion.choices[0].message.content
-                                clean_json = clean_json_string(raw_json)      
-                                cv_data = json.loads(clean_json)
-
-                             
