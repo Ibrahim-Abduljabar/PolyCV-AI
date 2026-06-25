@@ -25,9 +25,7 @@ def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Helvetica", size=12)
-    # تنظيف النص وكتابته داخل الـ PDF سطر بسطر
     for line in text.split('\n'):
-        # استبدال الرموز غير المدعومة بالخطوط القياسية لضمان عدم حدوث أخطاء ترميز
         clean_line = line.encode('latin-1', 'replace').decode('latin-1')
         pdf.multi_cell(0, 10, txt=clean_line)
     return pdf.output()
@@ -47,7 +45,8 @@ st.sidebar.subheader("🎯 اللغات المستهدفة (Target Languages)")
 
 target_lang_1 = st.sidebar.selectbox("اللغة المستهدفة الأولى:", ["English", "Arabic", "French", "Spanish", "German", "Turkish"], index=0)
 
-num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:",, index=0)
+# تم إصلاح الخطأ وإضافة مصفوفة الخيارات [1, 2, 3] هنا بشكل صحيح
+num_languages = st.sidebar.radio("اختر عدد اللغات الإضافية المُراد الترجمة إليها:", [1, 2, 3], index=0)
 
 target_languages = [target_lang_1]
 
@@ -141,7 +140,6 @@ if st.button("🚀 ابدأ المعالجة عبر PolyCV AI الآن", use_con
                                 # توليد ملف الـ PDF الجديد في الذاكرة وتجهيزه للتحميل
                                 pdf_data = create_pdf(translated_output)
                                 
-                                # إضافة زر التحميل السحري للمستخدم النهائي للـ SaaS
                                 st.download_button(
                                     label=f"📥 تحميل السيرة الذاتية المترجمة ({t_lang}) كملف PDF",
                                     data=pdf_data,
