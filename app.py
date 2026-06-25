@@ -135,7 +135,7 @@ uploaded_files = st.file_uploader("Select PDF resume profiles:", type=["pdf"], a
 cv_dict = {}
 if uploaded_files:
     for uploaded_file in uploaded_files:
-        try:
+
             pdf_reader = PdfReader(io.BytesIO(uploaded_file.read()))
             extracted_pages = [page.extract_text() for page in pdf_reader.pages]
             full_text = "\n".join(extracted_pages)
@@ -150,7 +150,6 @@ if st.button("🚀 Process and Inject Data Into Premium Template", use_container
     elif not cv_dict:
         st.warning("Please upload at least one valid PDF profile.")
     else:
-        try:
             client = Groq(api_key=GROQ_API_KEY)
             
             system_instruction = """
